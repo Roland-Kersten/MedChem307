@@ -11,7 +11,6 @@
 
 The following scripts were submitted to a high performance computing cluster via SLURM (https://github.com/schedmd/slurm). All softwares above were pre-installed under a Bioinformatics module on the computing cluster except orfipy, which was installed as described below. Sequenceserver was used as a cloud-based version (https://sequenceserver.com/).
 
-# Transcriptome assembly – single dataset
 **1a. SRA-download-initial-run**
 - Configure your cluster for sratools (v2.10.9) commands by running this script on the initial run.
 - Target RNA-seq datasets for de novo transcriptome assembly should be primarily paired-end data. To download an RNA-seq dataset from the NCBI sequence read archive (SRA), run the script:
@@ -55,7 +54,30 @@ module load Bioinformatics
 module load sratoolkit/2.10.9-udmejx7
 fasterq-dump SRA# --split-files
 ```
-**2. Trimming - paired-end datasets**
+**1c. Batch SRA-download**
+- For large-scale transcriptome mining, SRA datasets are downloaded in batches of up to 100 datasets per one directory with the following script. SRA accession numbers of target data are listed in an SRA.txt file with one SRA accession number per line.
+```
+#!/bin/bash
+#SBATCH --job-name=sra-download
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=24:00:00
+#SBATCH --mem=48g
+#SBATCH --mail-user=your@email.com
+#SBATCH --mail-type=END
+#SBATCH --output=./sratools-%j
+source /etc/profile.d/http_proxy.sh
+module load Bioinformatics
+module load sratoolkit/2.10.9-udmejx7
+sed -i 's/\r$//' SRA.txt &
+cat SRA.txt |parallel -j 10 xargs -n 25 -P 0 fasterq-dump --split-files --outdir /path/to/directory/ & jobs -l
+wait
+printf "\n...done\n\n"
+```
+**2a. Trimming - paired-end dataset**
 - Trimming improved precursor peptide assembly and core peptide detection in our study. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
 ```
 #!/bin/bash
@@ -74,7 +96,7 @@ module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
 trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 ```
-**2. Trimming - single-end datasets**
+**2b. Trimming - single-end dataset**
 - Trimming improved precursor peptide assembly and core peptide detection in our study. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
 ```
 #!/bin/bash
@@ -92,6 +114,42 @@ trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
 trim_galore --cores 4 ./SRA#.fastq
+```
+**2. Batch trimming - paired-end data**
+- Trimming can improve gene assembly. Paired-end RNA-seq data is trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
+- Generate directories for fwd reads and rev reads:
+```
+mkdir input_data_1
+mkdir input_data_2
+```
+- Move fwd reads to input_data_1/ directory:
+```
+mv *_1.fastq /path/to/input_data_1/
+```
+- Move rev reads to input_data_2/ directory:
+```
+mv *_2.fastq /path/to/input_data_2/
+```
+- Run the batch TrimGalore-trimming script:
+```
+#!/bin/bash
+#SBATCH --job-name=trimgalore
+#SBATCH --account=your_account
+#SBATCH --partition=standard 
+#SBATCH --array=1-(insert-number-of-datasets-in-input_data_1_directory)
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=02:00:00
+#SBATCH --mem=7g
+#SBATCH --mail-user=your@email.com
+#SBATCH --mail-type=END
+#SBATCH --output=./trimgalore-%j
+module load Bioinformatics
+module load trimgalore/0.6.7-ztb2tpz
+file1=$(ls ./input_data_1/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+file2=$(ls ./input_data_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+trim_galore --cores 4 --paired ./input_data_1/${file1} ./input_data_2/${file2}
 ```
 **3. Transcriptome assembly** - *Three assembler softwares were used for de novo transcriptome assembly from trimmed RNA-seq datasets.*
 - **a. SPAdes – paired-end datasets**
