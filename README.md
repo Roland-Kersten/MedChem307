@@ -262,6 +262,7 @@ sed -i 's/_i//g' *fasta
 **Kallisto indexing**
 ```
 #!/bin/bash
+#SBATCH --job-name=kallisto-index-SRA#
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -280,7 +281,7 @@ kallisto index -i SRA#.idx spades_SRA#.fasta
 - Quantify reads of each paired trimmed fastq dataset (SRA#) against indexed assembled transcriptome with the following kallisto script:
 ```
 #!/bin/bash
-#SBATCH --job-name=kallisto_quant_SRA#
+#SBATCH --job-name=kallisto-quant-SRA#
 #SBATCH --account=your_account
 #SBATCH --partition=standard
 #SBATCH --nodes=1
