@@ -38,7 +38,7 @@ fasterq-dump SRA# --split-files
 - Target RNA-seq datasets for de novo transcriptome assembly should be primarily paired-end data. To download an RNA-seq dataset from the NCBI sequence read archive (SRA), run the script:
 ```
 #!/bin/bash
-#SBATCH --job-name=sra-download-start
+#SBATCH --job-name=sra-download
 #SBATCH --account=your_account
 #SBATCH --partition=standard
 #SBATCH --nodes=1
