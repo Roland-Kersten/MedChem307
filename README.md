@@ -258,6 +258,7 @@ sed -i 's/_i//g' *fasta
 **5. Kallisto read quantification**
 - Read quantification in a given assembled transcriptome is done with kallisto from the trimmed read files.
 -	First the an assembled *de novo* transcriptome is indexed with the following kallisto-index script:
+  
 **Kallisto indexing**
 ```
 #!/bin/bash
@@ -274,6 +275,7 @@ module load Bioinformatics
 module load kallisto/0.46.0
 kallisto index -i SRA#.idx spades_SRA#.fasta
 ```
+
 **Kallisto quantification**
 - Quantify reads of each paired trimmed fastq dataset (SRA#) against indexed assembled transcriptome with the following kallisto script:
 ```
