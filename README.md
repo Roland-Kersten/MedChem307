@@ -297,7 +297,7 @@ module load kallisto/0.46.0
 kallisto quant -i SRA#.idx -o output_SRA# SRA#_1_val_1.fq SRA#_2_val_2.fq
 ```
 
-**EnTAP - gene function annotation**
+**6.EnTAP - gene function annotation**
 - Annotate the transcript sequences in a fasta file with EnTAP. EnTAP requires the installation and configuration of a reference database such as Uniprot. Please refer to EnTAP gitlab (https://gitlab.com/PlantGenomicsLab/EnTAP) for database installation.
 ```
 #!/bin/bash
