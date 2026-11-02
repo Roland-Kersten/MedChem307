@@ -255,3 +255,41 @@ sed -i 's/_cov//g' *fasta
 sed -i 's/_g//g' *fasta
 sed -i 's/_i//g' *fasta
 ```
+**5. Kallisto read quantification**
+- Read quantification in a given assembled transcriptome is done with kallisto from the trimmed read files.
+-	First the an assembled *de novo* transcriptome is indexed with the following kallisto-index script:
+**Kallisto indexing**
+```
+#!/bin/bash
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=7
+#SBATCH --time=24:00:00
+#SBATCH --mem=48g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./kallisto-index-%j
+module load Bioinformatics
+module load kallisto/0.46.0
+kallisto index -i SRA#.idx spades_SRA#.fasta
+```
+**Kallisto quantification**
+- Quantify reads of each paired trimmed fastq dataset (SRA#) against indexed assembled transcriptome with the following kallisto script:
+```
+#!/bin/bash
+#SBATCH --job-name=kallisto_quant_SRA#
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=7
+#SBATCH --time=24:00:00
+#SBATCH --mem=48g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./kallisto-quant-%j
+module load Bioinformatics
+module load kallisto/0.46.0
+kallisto quant -i SRA#.idx -o output_SRA# SRA#_1_val_1.fq SRA#_2_val_2.fq
+```
