@@ -153,6 +153,7 @@ trim_galore --cores 8 --paired ./input_data_1/${file1} ./input_data_2/${file2}
 ```
 **3. Transcriptome assembly** 
 - SPAdes is used for de novo transcriptome assembly from trimmed RNA-seq datasets.
+
 **3a. SPAdes – paired-end datasets**
 ```
 #!/bin/bash
