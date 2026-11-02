@@ -86,7 +86,7 @@ printf "\n...done\n\n"
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --time=02:00:00
 #SBATCH --mem=7g
 #SBATCH --mail-user=your@email.com
@@ -94,7 +94,7 @@ printf "\n...done\n\n"
 #SBATCH --output=./trimgalore-%j
 module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
-trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
+trim_galore --cores 8 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 ```
 **2b. Trimming - single-end dataset**
 - Trimming improves transcript assembly and gene detection. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
@@ -105,7 +105,7 @@ trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --time=02:00:00
 #SBATCH --mem=7g
 #SBATCH --mail-user=your@email.com
@@ -113,7 +113,7 @@ trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 #SBATCH --output=./trimgalore-%j
 module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
-trim_galore --cores 4 ./SRA#.fastq
+trim_galore --cores 8 ./SRA#.fastq
 ```
 **2c. Batch trimming - paired-end data**
 - Trimming improves transcript assembly and gene detection. Paired-end RNA-seq data is trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
@@ -139,7 +139,7 @@ mv *_2.fastq /path/to/input_data_2/
 #SBATCH --array=1-(insert-number-of-datasets-in-input_data_1_directory)
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 #SBATCH --time=02:00:00
 #SBATCH --mem=7g
 #SBATCH --mail-user=your@email.com
@@ -149,7 +149,7 @@ module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
 file1=$(ls ./input_data_1/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
 file2=$(ls ./input_data_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
-trim_galore --cores 4 --paired ./input_data_1/${file1} ./input_data_2/${file2}
+trim_galore --cores 8 --paired ./input_data_1/${file1} ./input_data_2/${file2}
 ```
 **3. Transcriptome assembly** 
 - SPAdes is used for de novo transcriptome assembly from trimmed RNA-seq datasets.
