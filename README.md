@@ -115,7 +115,7 @@ module load Bioinformatics
 module load trimgalore/0.6.7-ztb2tpz
 trim_galore --cores 4 ./SRA#.fastq
 ```
-**2. Batch trimming - paired-end data**
+**2c. Batch trimming - paired-end data**
 - Trimming improves transcript assembly and gene detection. Paired-end RNA-seq data is trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
 - Generate directories for fwd reads and rev reads:
 ```
@@ -153,7 +153,7 @@ trim_galore --cores 4 --paired ./input_data_1/${file1} ./input_data_2/${file2}
 ```
 **3. Transcriptome assembly** 
 - SPAdes is used for de novo transcriptome assembly from trimmed RNA-seq datasets.
-- **a. SPAdes – paired-end datasets**
+**3a. SPAdes – paired-end datasets**
 ```
 #!/bin/bash
 #SBATCH --job-name=SPAdes
@@ -173,7 +173,7 @@ spades.py --rna -1 ./SRA#_1_val_1.fq -2 ./SRA#_2_val_2.fq -o spades_SRA#
 cd spades_SRA#
 mv transcripts.fasta spades_SRA#.fasta
 ```
-- **b. SPAdes – single-end datasets**
+**3b. SPAdes – single-end datasets**
 ```
 #!/bin/bash
 #SBATCH --job-name=SPAdes
@@ -192,4 +192,65 @@ module load spades/3.15.5-jhe6qq2
 spades.py --rna -s ./SRA#_trimmed.fq -o spades_SRA#
 cd spades_SRA#
 mv transcripts.fasta spades_SRA#.fasta
+```
+**3c. SPAdes - batch assembly of multiple datasets**
+- Generate directories for trimmed fwd reads and trimmed rev reads:
+```
+mkdir input_data_trimmed_1
+mkdir input_data_trimmed_2
+```
+- Move trimmed fwd reads to input_data_trimmed_1/ directory:
+```
+mv *_1.fq /path/to/input_data_trimmed_1/
+```
+- Move trimmed rev reads to input_data_trimmed_2/ directory:
+```
+mv *_2.fq /path/to/input_data_trimmed_2/
+```
+- Run SPAdes batch assembly:
+```
+#!/bin/bash
+#SBATCH --job-name=SPAdes
+#SBATCH --account=your_account 
+#SBATCH --partition=standard
+#SBATCH --array=1-(insert-number-of-datasets-in-input_data_trimmed_1_directory)
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=7
+#SBATCH --time=24:00:00
+#SBATCH --mem=48g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./SPAdes-%j
+module load Bioinformatics
+module load spades/3.15.5-jhe6qq2
+file1=$(ls ./input_data_trimmed_1/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+file2=$(ls ./input_data_trimmed_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
+spades.py --rna -1 ./input_data_trimmed_1/${file1} -2 ./input_data_trimmed_2/${file2} -o spades_$file1
+cd spades_$file1
+mv transcripts.fasta /path-to-directory/spades_$file1\.fasta
+for f in *_1_val_1.fq.fasta; do mv -- "$f" "${f%_1_val_1.fq.fasta}.fasta"; done
+```
+**4. BLAST database formatting** 
+- BLAST database generation of transcriptome assemblies by Sequenceserver requires reduction of fasta headers to less than 51 letters. The following script was used for SPAdes-specific assembly fasta file formatting for Sequenceserver-based BLAST database generation and commandline PHI-BLAST search.
+```
+#!/bin/bash
+#SBATCH --job-name=rename
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --time=12:00:00
+#SBATCH --mem=10g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./rename-%j
+
+for i in *fasta; do n="${i%.fasta}"; sed -i.bak "s/>[^_]\+/>$n/" $i; done
+cat *fasta
+sed -i 's/_length//g' *fasta
+sed -i 's/_cov//g' *fasta
+sed -i 's/_g//g' *fasta
+sed -i 's/_i//g' *fasta
 ```
