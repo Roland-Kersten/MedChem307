@@ -78,7 +78,7 @@ wait
 printf "\n...done\n\n"
 ```
 **2a. Trimming - paired-end dataset**
-- Trimming improved precursor peptide assembly and core peptide detection in our study. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
+- Trimming improves transcript assembly and gene detection. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
 ```
 #!/bin/bash
 #SBATCH --job-name=trimgalore
@@ -97,7 +97,7 @@ module load trimgalore/0.6.7-ztb2tpz
 trim_galore --cores 4 --paired ./SRA#_1.fastq ./ SRA#_2.fastq
 ```
 **2b. Trimming - single-end dataset**
-- Trimming improved precursor peptide assembly and core peptide detection in our study. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
+- Trimming improves transcript assembly and gene detection. To trim an RNA-seq dataset with TrimGalore (v0.6.7) default settings, run the script:
 ```
 #!/bin/bash
 #SBATCH --job-name=trimgalore
@@ -116,7 +116,7 @@ module load trimgalore/0.6.7-ztb2tpz
 trim_galore --cores 4 ./SRA#.fastq
 ```
 **2. Batch trimming - paired-end data**
-- Trimming can improve gene assembly. Paired-end RNA-seq data is trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
+- Trimming improves transcript assembly and gene detection. Paired-end RNA-seq data is trimmed with TrimGalore (v0.6.7) default settings in batches of 100 datasets.
 - Generate directories for fwd reads and rev reads:
 ```
 mkdir input_data_1
@@ -151,7 +151,8 @@ file1=$(ls ./input_data_1/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
 file2=$(ls ./input_data_2/ | sed -n ${SLURM_ARRAY_TASK_ID}p)
 trim_galore --cores 4 --paired ./input_data_1/${file1} ./input_data_2/${file2}
 ```
-**3. Transcriptome assembly** - *Three assembler softwares were used for de novo transcriptome assembly from trimmed RNA-seq datasets.*
+**3. Transcriptome assembly** 
+- SPAdes is used for de novo transcriptome assembly from trimmed RNA-seq datasets.
 - **a. SPAdes – paired-end datasets**
 ```
 #!/bin/bash
