@@ -296,3 +296,70 @@ module load Bioinformatics
 module load kallisto/0.46.0
 kallisto quant -i SRA#.idx -o output_SRA# SRA#_1_val_1.fq SRA#_2_val_2.fq
 ```
+
+**EnTAP - gene function annotation**
+- Annotate the transcript sequences in a fasta file with EnTAP. EnTAP requires the installation and configuration of a reference database such as Uniprot. Please refer to EnTAP gitlab (https://gitlab.com/PlantGenomicsLab/EnTAP) for database installation.
+```
+#!/bin/bash
+#SBATCH --job-name=entap
+#SBATCH --account=your_account
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=24:00:00
+#SBATCH --mem=14g
+#SBATCH --mail-user=your@mail.com
+#SBATCH --mail-type=END
+#SBATCH --output=./entap-%j
+module load Bioinformatics
+module load EnTAP/2.0.0
+EnTAP --runN --state 4x --run-ini ./entap_run.params --entap-ini ./entap_config.ini
+```
+- An entap_config.ini file and a entap_run.params file are required in the EnTAP directory to run EnTAP.
+- Generate entap_config.ini:
+```
+nano entap_config.ini
+```
+with following input and save:
+```
+data-generate=false
+data-type=0,
+entap-db-bin=/sw/pkgs/arc/EnTAP/2.0.0/db/bin/entap_database.bin
+entap-graph=/sw/pkgs/arc/EnTAP/2.0.0/bin/entap_graphing.py
+rsem-calculate-expression=/sw/pkgs/med/RSEM/1.3.3/bin/rsem-calculate-expression
+rsem-sam-validator=/sw/pkgs/med/RSEM/1.3.3/bin/rsem-sam-validator
+rsem-prepare-reference=/sw/pkgs/med/RSEM/1.3.3/bin/rsem-prepare-reference
+convert-sam-for-rsem=/sw/pkgs/med/RSEM/1.3.3/bin/convert-sam-for-rsem
+transdecoder-long-exe=/sw/pkgs/arc/EnTAP/2.0.0/bin/libs/TransDecoder-TransDecoder-v5.7.1/TransDecoder.LongOrfs
+transdecoder-predict-exe=/sw/pkgs/arc/EnTAP/2.0.0/bin/libs/TransDecoder-TransDecoder-v5.7.1/TransDecoder.Predict
+interproscan-exe=interproscan.sh
+diamond-exe=/sw/pkgs/arc/EnTAP/1.0.1/bin/libs/bin/diamond
+```
+- Generate	entap_run.params:
+```
+fpkm=0.5
+align=
+transdecoder-no-refine-starts=false
+out-dir=entap_outfiles
+overwrite=false
+resume=false
+input=/scratch/rkersten_root/rkersten1/rkersten/MC307/spades_SRR8195628.fasta
+database=/nfs/turbo/phar-rkersten/Uniprot/bin/uniprot_sprot.dmnd
+no-trim=false
+threads=1
+output-format=1,3,4,7,
+hgt-donor=
+hgt-recipient=
+hgt-gff=
+ontology_source=0,
+eggnog-contaminant=false
+eggnog-dbmem=false
+eggnog-sensitivity=more-sensitive
+interproscan-db=
+qcoverage=50
+tcoverage=50
+e-value=1e-05
+uninformative=conserved,predicted,unknown,unnamed,hypothetical,putative,unidentified,uncharacterized,uncultured,uninformative,
+diamond-sensitivity=very-sensitive
+```
