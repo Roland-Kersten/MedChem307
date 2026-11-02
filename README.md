@@ -22,7 +22,7 @@ The following scripts were submitted to a high performance computing cluster via
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH --mem=10g
 #SBATCH --mail-user=your@email.com
 #SBATCH --mail-type=END
@@ -44,7 +44,7 @@ fasterq-dump SRA# --split-files
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH --mem=10g
 #SBATCH --mail-user=your@email.com
 #SBATCH --mail-type=END
