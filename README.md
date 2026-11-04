@@ -263,6 +263,7 @@ sed -i 's/_i//g' *fasta
 ```
 #!/bin/bash
 #SBATCH --job-name=kallisto-index-SRA#
+#SBATCH --account=your_account
 #SBATCH --partition=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
