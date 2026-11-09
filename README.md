@@ -337,7 +337,7 @@ transdecoder-predict-exe=/sw/pkgs/arc/EnTAP/2.0.0/bin/libs/TransDecoder-TransDec
 interproscan-exe=interproscan.sh
 diamond-exe=/sw/pkgs/arc/EnTAP/1.0.1/bin/libs/bin/diamond
 ```
-- Generate	entap_run.params:
+- For Uniprot database annotation (fast, incomplete rich EnTAP annotation), generate the following	entap_run.params:
 ```
 fpkm=0.5
 align=
@@ -347,6 +347,33 @@ overwrite=false
 resume=false
 input=/scratch/rkersten_root/rkersten1/rkersten/MC307/spades_SRR8195628.fasta
 database=/nfs/turbo/phar-rkersten/Uniprot/bin/uniprot_sprot.dmnd
+no-trim=false
+threads=1
+output-format=1,3,4,7,
+hgt-donor=
+hgt-recipient=
+hgt-gff=
+ontology_source=0,
+eggnog-contaminant=false
+eggnog-dbmem=false
+eggnog-sensitivity=more-sensitive
+interproscan-db=
+qcoverage=50
+tcoverage=50
+e-value=1e-05
+uninformative=conserved,predicted,unknown,unnamed,hypothetical,putative,unidentified,uncharacterized,uncultured,uninformative,
+diamond-sensitivity=very-sensitive
+```
+- For NCBI nr database annotation (long, rich EnTAP annotation), generate	the following entap_run.params:
+```
+fpkm=0.5
+align=
+transdecoder-no-refine-starts=false
+out-dir=entap_outfiles
+overwrite=false
+resume=false
+input=/scratch/rkersten_root/rkersten1/rkersten/MC307/spades_SRR8195628.fasta
+database=/nfs/turbo/phar-rkersten/nr_database.dmnd
 no-trim=false
 threads=1
 output-format=1,3,4,7,
