@@ -124,11 +124,11 @@ mkdir input_data_2
 ```
 - Move fwd reads to input_data_1/ directory:
 ```
-mv *_1.fastq /path/to/input_data_1/
+mv *_1.fastq input_data_1
 ```
 - Move rev reads to input_data_2/ directory:
 ```
-mv *_2.fastq /path/to/input_data_2/
+mv *_2.fastq input_data_2
 ```
 - Run the batch TrimGalore-trimming script:
 ```
